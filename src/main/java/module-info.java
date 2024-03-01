@@ -3,5 +3,7 @@ module dev.lzzgabriel.workshop {
     requires javafx.fxml;
 
     opens dev.lzzgabriel.workshop to javafx.fxml;
+    opens dev.lzzgabriel.workshop.controller to javafx.fxml;
     exports dev.lzzgabriel.workshop;
+    exports dev.lzzgabriel.workshop.controller;
 }
