@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import dev.lzzgabriel.workshop.App;
+import dev.lzzgabriel.workshop.model.services.DepartmentService;
 import dev.lzzgabriel.workshop.util.Alerts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,7 +30,7 @@ public class MainViewController implements Initializable {
   
   @FXML
   public void onMenuItemDepartmentAction() {
-    loadView("DepartmentList");
+    loadView2("DepartmentList");
   }
   
   @FXML
@@ -53,6 +54,28 @@ public class MainViewController implements Initializable {
       mainVbox.getChildren().clear();
       mainVbox.getChildren().add(menu);
       mainVbox.getChildren().addAll(newVbox.getChildren());
+      
+    } catch (IOException e) {
+      Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), null);
+    }
+  }
+  
+  private synchronized void loadView2(String name) {
+    try {
+      var loader = new FXMLLoader(App.class.getResource(name + ".fxml"));
+      var newVbox = (VBox) loader.load();
+      
+      var scene = App.getScene();
+      var mainVbox = (VBox) ((ScrollPane) scene.getRoot()).getContent();
+      
+      var menu = mainVbox.getChildren().get(0);
+      mainVbox.getChildren().clear();
+      mainVbox.getChildren().add(menu);
+      mainVbox.getChildren().addAll(newVbox.getChildren());
+      
+      var controller = (DepartmentListController) loader.getController();
+      controller.setDepartmentService(new DepartmentService());
+      controller.updateTableView();
       
     } catch (IOException e) {
       Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), null);

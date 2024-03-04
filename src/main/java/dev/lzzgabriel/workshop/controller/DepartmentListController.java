@@ -5,6 +5,9 @@ import java.util.ResourceBundle;
 
 import dev.lzzgabriel.workshop.App;
 import dev.lzzgabriel.workshop.model.entities.Department;
+import dev.lzzgabriel.workshop.model.services.DepartmentService;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -14,6 +17,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class DepartmentListController implements Initializable {
+  
+  private DepartmentService departmentService;
+  
+  private ObservableList<Department> departments;
   
   @FXML
   private TableView<Department> tableView;
@@ -43,6 +50,21 @@ public class DepartmentListController implements Initializable {
     
     var stage = (Stage) App.getScene().getWindow();
     tableView.prefHeightProperty().bind(stage.heightProperty());
+  }
+
+  public void setDepartmentService(DepartmentService departmentService) {
+    this.departmentService = departmentService;
+  }
+  
+  public void updateTableView() {
+    if (departmentService == null) {
+      throw new IllegalStateException("Department service unavailable: not set");
+    }
+    var list = departmentService.findAll();
+    
+    departments = FXCollections.observableArrayList(list);
+    
+    tableView.setItems(departments);
   }
 
 }
