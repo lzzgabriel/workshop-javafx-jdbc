@@ -28,6 +28,10 @@ public class App extends Application {
     stage.setTitle("Sample JavaFX App");
     stage.show();
   }
+  
+  public static Scene getScene() {
+    return scene;
+  }
 
   static void setRoot(String fxml) throws IOException {
     scene.setRoot(loadFXML(fxml));
