@@ -3,6 +3,7 @@ package dev.lzzgabriel.workshop.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import dev.lzzgabriel.workshop.App;
 import dev.lzzgabriel.workshop.model.services.DepartmentService;
@@ -30,19 +31,22 @@ public class MainViewController implements Initializable {
   
   @FXML
   public void onMenuItemDepartmentAction() {
-    loadView2("DepartmentList");
+    loadView("DepartmentList", (DepartmentListController controller) -> {
+      controller.setDepartmentService(new DepartmentService());
+      controller.updateTableView();
+    });
   }
   
   @FXML
   public void onMenuItemAboutAction() {
-    loadView("About");
+    loadView("About", noop -> {});
   }
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
   }
   
-  private synchronized void loadView(String name) {
+  private synchronized <T> void loadView(String name, Consumer<T> initializingAction) {
     try {
       var loader = new FXMLLoader(App.class.getResource(name + ".fxml"));
       var newVbox = (VBox) loader.load();
@@ -55,31 +59,10 @@ public class MainViewController implements Initializable {
       mainVbox.getChildren().add(menu);
       mainVbox.getChildren().addAll(newVbox.getChildren());
       
+      initializingAction.accept(loader.getController());
     } catch (IOException e) {
       Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), null);
     }
   }
   
-  private synchronized void loadView2(String name) {
-    try {
-      var loader = new FXMLLoader(App.class.getResource(name + ".fxml"));
-      var newVbox = (VBox) loader.load();
-      
-      var scene = App.getScene();
-      var mainVbox = (VBox) ((ScrollPane) scene.getRoot()).getContent();
-      
-      var menu = mainVbox.getChildren().get(0);
-      mainVbox.getChildren().clear();
-      mainVbox.getChildren().add(menu);
-      mainVbox.getChildren().addAll(newVbox.getChildren());
-      
-      var controller = (DepartmentListController) loader.getController();
-      controller.setDepartmentService(new DepartmentService());
-      controller.updateTableView();
-      
-    } catch (IOException e) {
-      Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), null);
-    }
-  }
-
 }
