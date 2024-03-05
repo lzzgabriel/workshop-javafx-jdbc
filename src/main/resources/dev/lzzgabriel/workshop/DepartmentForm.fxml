@@ -26,7 +26,7 @@
          <children>
             <Label text="ID" />
             <Label text="Name" GridPane.rowIndex="1" />
-            <TextField editable="false" GridPane.columnIndex="1" />
+            <TextField editable="false" GridPane.columnIndex="1" fx:id="txtID" />
             <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="txtName" />
             <Label textFill="#b22828" GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="lbError" />
             <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
