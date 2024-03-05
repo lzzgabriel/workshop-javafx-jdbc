@@ -3,11 +3,13 @@ package dev.lzzgabriel.workshop.controller;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import dev.lzzgabriel.workshop.db.DbException;
 import dev.lzzgabriel.workshop.listeners.DataChangeListener;
 import dev.lzzgabriel.workshop.model.entities.Department;
+import dev.lzzgabriel.workshop.model.exceptions.ValidationException;
 import dev.lzzgabriel.workshop.model.services.DepartmentService;
 import dev.lzzgabriel.workshop.util.Alerts;
 import dev.lzzgabriel.workshop.util.Constraints;
@@ -45,17 +47,19 @@ public class DepartmentFormController implements Initializable {
   
   @FXML
   public void onBtnSaveAction(ActionEvent event) {
-    entity = getFormData();
     if (service == null) {
       throw new IllegalStateException("DepartmentService not available: not set");
     }
     try {
+      entity = getFormData();
       service.saveOrUpdate(entity);
       notifyListeners();
+      Utils.currentStage(event).close();
     } catch (DbException e) {
       Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
+    } catch (ValidationException e) {
+      setErrorMessages(e.getErrors());
     }
-    Utils.currentStage(event).close();
   }
   
   private void notifyListeners() {
@@ -87,10 +91,28 @@ public class DepartmentFormController implements Initializable {
   public Department getFormData() {
     var obj = new Department();
     
+    var validation = new ValidationException("Validation error");
+    
     obj.setId(Utils.tryParseToInt(txtID.getText()));
+    
+    if (txtName.getText() == null || txtName.getText().trim().equals("")) {
+      validation.addError("name", "Field can't be empty");
+    }
     obj.setName(txtName.getText());
     
+    if (!validation.getErrors().isEmpty() ) {
+      throw validation;
+    }
+    
     return obj;
+  }
+  
+  private void setErrorMessages(Map<String, String> errors) {
+    var fields = errors.keySet();
+    
+    if (fields.contains("name")) {
+      lbError.setText(errors.get("name"));
+    }
   }
   
   public void addDataChangeListener(DataChangeListener listener) {
