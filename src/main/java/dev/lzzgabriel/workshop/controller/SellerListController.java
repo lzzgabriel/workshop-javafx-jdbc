@@ -104,26 +104,26 @@ public class SellerListController implements Initializable {
   }
 
   private void createDialogForm(Seller obj, String name, Stage parentStage) {
-//    try {
-//      var loader = new FXMLLoader(App.class.getResource(name + ".fxml"));
-//      Pane pane = loader.load();
-//
-//      SellerFormController controller = loader.getController();
-//      controller.setSeller(obj);
-//      controller.setService(departmentService);
-//      controller.addDataChangeListener(() -> updateTableView());
-//      controller.updateFormData();
-//
-//      Stage dialogStage = new Stage();
-//      dialogStage.setTitle("Enter department data");
-//      dialogStage.setScene(new Scene(pane));
-//      dialogStage.setResizable(false);
-//      dialogStage.initOwner(parentStage);
-//      dialogStage.initModality(Modality.WINDOW_MODAL);
-//      dialogStage.showAndWait();
-//    } catch (IOException e) {
-//      Alerts.showAlert("IOException", "Error load view", e.getMessage(), AlertType.ERROR);
-//    }
+    try {
+      var loader = new FXMLLoader(App.class.getResource(name + ".fxml"));
+      Pane pane = loader.load();
+
+      SellerFormController controller = loader.getController();
+      controller.setSeller(obj);
+      controller.setService(departmentService);
+      controller.addDataChangeListener(() -> updateTableView());
+      controller.updateFormData();
+
+      Stage dialogStage = new Stage();
+      dialogStage.setTitle("Enter department data");
+      dialogStage.setScene(new Scene(pane));
+      dialogStage.setResizable(false);
+      dialogStage.initOwner(parentStage);
+      dialogStage.initModality(Modality.WINDOW_MODAL);
+      dialogStage.showAndWait();
+    } catch (IOException e) {
+      Alerts.showAlert("IOException", "Error load view", e.getMessage(), AlertType.ERROR);
+    }
   }
 
   private void initEditButtons() {
