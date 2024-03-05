@@ -2,6 +2,7 @@ package dev.lzzgabriel.workshop.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import dev.lzzgabriel.workshop.App;
@@ -43,6 +44,15 @@ public class SellerListController implements Initializable {
 
   @FXML
   private TableColumn<Seller, String> nameColumn;
+  
+  @FXML
+  private TableColumn<Seller, String> emailColumn;
+  
+  @FXML
+  private TableColumn<Seller, LocalDate> birthDateColumn;
+  
+  @FXML
+  private TableColumn<Seller, Double> baseSalaryColumn;
 
   @FXML
   private TableColumn<Seller, Seller> editColumn;
@@ -67,6 +77,11 @@ public class SellerListController implements Initializable {
   private void initializeNodes() {
     idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
     nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+    emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+    birthDateColumn.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+    Utils.formatTableColumnDate(birthDateColumn, "dd/MM/yyyy");
+    baseSalaryColumn.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+    Utils.formatTableColumnDouble(baseSalaryColumn, 2);
 
     var stage = (Stage) App.getScene().getWindow();
     tableView.prefHeightProperty().bind(stage.heightProperty());
