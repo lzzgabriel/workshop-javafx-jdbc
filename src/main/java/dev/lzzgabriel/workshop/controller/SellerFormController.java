@@ -1,6 +1,9 @@
 package dev.lzzgabriel.workshop.controller;
 
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -142,7 +145,8 @@ public class SellerFormController implements Initializable {
     dpBirthDate.setValue(entity.getBirthDate());
     if (entity.getDepartment() == null) {
       cboxDepartment.getSelectionModel().selectFirst();
-    } else cboxDepartment.setValue(entity.getDepartment());
+    } else
+      cboxDepartment.setValue(entity.getDepartment());
   }
 
   public Seller getFormData() {
@@ -156,6 +160,23 @@ public class SellerFormController implements Initializable {
       validation.addError("name", "Field can't be empty");
     }
     obj.setName(txtName.getText());
+    if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+      validation.addError("email", "Field can't be empty");
+    }
+    obj.setEmail(txtEmail.getText());
+
+    if (dpBirthDate.getValue() == null) {
+      validation.addError("birthDate", "Field can't be empty");
+    } else {
+      obj.setBirthDate(LocalDate.from(dpBirthDate.getValue()));
+    }
+
+    if (txtBaseSalary.getText() == null || txtBaseSalary.getText().trim().equals("")) {
+      validation.addError("baseSalary", "Field can't be empty");
+    }
+    obj.setBaseSalary(Utils.tryParseToDouble(txtBaseSalary.getText()));
+    
+    obj.setDepartment(cboxDepartment.getValue());
 
     if (!validation.getErrors().isEmpty()) {
       throw validation;
@@ -179,9 +200,10 @@ public class SellerFormController implements Initializable {
   private void setErrorMessages(Map<String, String> errors) {
     var fields = errors.keySet();
 
-    if (fields.contains("name")) {
-      lbErrorName.setText(errors.get("name"));
-    }
+    lbErrorName.setText(fields.contains("name") ? errors.get("name") : "");
+    lbErrorEmail.setText(fields.contains("email") ? errors.get("email") : "");
+    lbErrorBirthDate.setText(fields.contains("birthDate") ? errors.get("birthDate") : "");
+    lbErrorBaseSalary.setText(fields.contains("baseSalary") ? errors.get("baseSalary") : "");
   }
 
   public void addDataChangeListener(DataChangeListener listener) {
