@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 import dev.lzzgabriel.workshop.App;
 import dev.lzzgabriel.workshop.model.services.DepartmentService;
+import dev.lzzgabriel.workshop.model.services.SellerService;
 import dev.lzzgabriel.workshop.util.Alerts;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +27,10 @@ public class MainViewController implements Initializable {
   
   @FXML
   public void onMenuItemSellerAction() {
-    System.out.println("onMenuItemSellerAction");
+    loadView("SellerList", (SellerListController controller) -> {
+      controller.setSellerService(new SellerService());
+      controller.updateTableView();
+    });
   }
   
   @FXML
