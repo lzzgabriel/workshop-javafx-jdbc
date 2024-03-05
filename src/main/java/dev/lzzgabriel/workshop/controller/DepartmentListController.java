@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import dev.lzzgabriel.workshop.App;
+import dev.lzzgabriel.workshop.listeners.DataChangeListener;
 import dev.lzzgabriel.workshop.model.entities.Department;
 import dev.lzzgabriel.workshop.model.services.DepartmentService;
 import dev.lzzgabriel.workshop.util.Alerts;
@@ -85,6 +86,7 @@ public class DepartmentListController implements Initializable {
       DepartmentFormController controller = loader.getController();
       controller.setDepartment(obj);
       controller.setService(departmentService);
+      controller.addDataChangeListener(() -> updateTableView());
       controller.updateFormData();
       
       Stage dialogStage = new Stage();

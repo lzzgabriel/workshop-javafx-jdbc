@@ -1,9 +1,12 @@
 package dev.lzzgabriel.workshop.controller;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import dev.lzzgabriel.workshop.db.DbException;
+import dev.lzzgabriel.workshop.listeners.DataChangeListener;
 import dev.lzzgabriel.workshop.model.entities.Department;
 import dev.lzzgabriel.workshop.model.services.DepartmentService;
 import dev.lzzgabriel.workshop.util.Alerts;
@@ -38,6 +41,8 @@ public class DepartmentFormController implements Initializable {
   
   private DepartmentService service;
   
+  private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
+  
   @FXML
   public void onBtnSaveAction(ActionEvent event) {
     entity = getFormData();
@@ -46,12 +51,17 @@ public class DepartmentFormController implements Initializable {
     }
     try {
       service.saveOrUpdate(entity);
+      notifyListeners();
     } catch (DbException e) {
       Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
-      Utils.currentStage(event).close();
     }
+    Utils.currentStage(event).close();
   }
   
+  private void notifyListeners() {
+    dataChangeListeners.forEach(DataChangeListener::onDataChanged);
+  }
+
   @FXML
   public void onBtnCancelAction(ActionEvent event) {
     Utils.currentStage(event).close();
@@ -81,6 +91,10 @@ public class DepartmentFormController implements Initializable {
     obj.setName(txtName.getText());
     
     return obj;
+  }
+  
+  public void addDataChangeListener(DataChangeListener listener) {
+    dataChangeListeners.add(listener);
   }
 
   public void setDepartment(Department entity) {
