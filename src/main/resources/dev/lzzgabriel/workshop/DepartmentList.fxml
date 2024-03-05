@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox prefHeight="202.0" prefWidth="311.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21" fx:controller="dev.lzzgabriel.workshop.controller.DepartmentListController">
+<VBox prefHeight="202.0" prefWidth="311.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.lzzgabriel.workshop.controller.DepartmentListController">
    <children>
       <Label text="Department Registration">
          <font>
@@ -22,13 +21,14 @@
       </Label>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button mnemonicParsing="false" text="New" fx:id="newButton" onAction="#onNewButtonAction" />
+          <Button fx:id="newButton" mnemonicParsing="false" onAction="#onNewButtonAction" text="New" />
         </items>
       </ToolBar>
-      <TableView prefHeight="200.0" prefWidth="200.0" fx:id="tableView">
+      <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0">
         <columns>
-          <TableColumn prefWidth="75.0" text="ID" fx:id="idColumn" />
-          <TableColumn prefWidth="75.0" text="Name" fx:id="nameColumn" />
+          <TableColumn fx:id="idColumn" prefWidth="75.0" text="ID" />
+          <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Name" />
+            <TableColumn prefWidth="75.0" fx:id="editColumn" />
         </columns>
       </TableView>
    </children>
