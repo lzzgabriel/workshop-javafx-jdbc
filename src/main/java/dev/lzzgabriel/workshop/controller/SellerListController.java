@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import dev.lzzgabriel.workshop.App;
 import dev.lzzgabriel.workshop.db.DbIntegrityException;
 import dev.lzzgabriel.workshop.model.entities.Seller;
+import dev.lzzgabriel.workshop.model.services.DepartmentService;
 import dev.lzzgabriel.workshop.model.services.SellerService;
 import dev.lzzgabriel.workshop.util.Alerts;
 import dev.lzzgabriel.workshop.util.Utils;
@@ -32,7 +33,7 @@ import javafx.stage.Stage;
 
 public class SellerListController implements Initializable {
 
-  private SellerService departmentService;
+  private SellerService sellerService;
 
   private ObservableList<Seller> departments;
 
@@ -88,14 +89,14 @@ public class SellerListController implements Initializable {
   }
 
   public void setSellerService(SellerService departmentService) {
-    this.departmentService = departmentService;
+    this.sellerService = departmentService;
   }
 
   public void updateTableView() {
-    if (departmentService == null) {
+    if (sellerService == null) {
       throw new IllegalStateException("Seller service unavailable: not set");
     }
-    var list = departmentService.findAll();
+    var list = sellerService.findAll();
 
     departments = FXCollections.observableArrayList(list);
     tableView.setItems(departments);
@@ -110,7 +111,8 @@ public class SellerListController implements Initializable {
 
       SellerFormController controller = loader.getController();
       controller.setSeller(obj);
-      controller.setService(departmentService);
+      controller.setServices(sellerService, new DepartmentService());
+      controller.loadAssociatedObjects();
       controller.addDataChangeListener(() -> updateTableView());
       controller.updateFormData();
 
@@ -122,6 +124,7 @@ public class SellerListController implements Initializable {
       dialogStage.initModality(Modality.WINDOW_MODAL);
       dialogStage.showAndWait();
     } catch (IOException e) {
+      e.printStackTrace();
       Alerts.showAlert("IOException", "Error load view", e.getMessage(), AlertType.ERROR);
     }
   }
@@ -166,11 +169,11 @@ public class SellerListController implements Initializable {
     var opt = Alerts.showConfirmation("Confirmation", "Are you sure?");
     
     if (opt.get() == ButtonType.OK) {
-      if (departmentService == null) {
+      if (sellerService == null) {
         throw new IllegalStateException("SellerService unavailable: not set");
       }
       try {
-        departmentService.remove(obj);
+        sellerService.remove(obj);
         updateTableView();
       } catch (DbIntegrityException e) {
         Alerts.showAlert("Error removing object", null, e.getMessage(), AlertType.ERROR);

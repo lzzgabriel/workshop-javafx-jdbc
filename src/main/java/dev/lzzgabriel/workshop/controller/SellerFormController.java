@@ -9,20 +9,28 @@ import java.util.ResourceBundle;
 
 import dev.lzzgabriel.workshop.db.DbException;
 import dev.lzzgabriel.workshop.listeners.DataChangeListener;
+import dev.lzzgabriel.workshop.model.entities.Department;
 import dev.lzzgabriel.workshop.model.entities.Seller;
 import dev.lzzgabriel.workshop.model.exceptions.ValidationException;
+import dev.lzzgabriel.workshop.model.services.DepartmentService;
 import dev.lzzgabriel.workshop.model.services.SellerService;
 import dev.lzzgabriel.workshop.util.Alerts;
 import dev.lzzgabriel.workshop.util.Constraints;
 import dev.lzzgabriel.workshop.util.Utils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.util.Callback;
 
 public class SellerFormController implements Initializable {
 
@@ -31,25 +39,28 @@ public class SellerFormController implements Initializable {
 
   @FXML
   private TextField txtName;
-  
+
   @FXML
   private TextField txtEmail;
-  
+
   @FXML
   private DatePicker dpBirthDate;
-  
+
   @FXML
   private TextField txtBaseSalary;
 
   @FXML
+  private ComboBox<Department> cboxDepartment;
+
+  @FXML
   private Label lbErrorName;
-  
+
   @FXML
   private Label lbErrorEmail;
-  
+
   @FXML
   private Label lbErrorBirthDate;
-  
+
   @FXML
   private Label lbErrorBaseSalary;
 
@@ -63,7 +74,11 @@ public class SellerFormController implements Initializable {
 
   private SellerService service;
 
+  private DepartmentService departmentService;
+
   private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
+
+  private ObservableList<Department> obsList;
 
   @FXML
   public void onBtnSaveAction(ActionEvent event) {
@@ -102,6 +117,17 @@ public class SellerFormController implements Initializable {
     Constraints.setTextFieldMaxLength(txtEmail, 50);
     Constraints.setTextFieldDouble(txtBaseSalary);
     Utils.formatDatePicker(dpBirthDate, "dd/MM/yyyy");
+    initializeComboBoxDepartment();
+  }
+
+  public void loadAssociatedObjects() {
+    if (departmentService == null) {
+      throw new IllegalStateException("DepartmentService unavailable: not set");
+    }
+    var list = departmentService.findAll();
+
+    obsList = FXCollections.observableArrayList(list);
+    cboxDepartment.setItems(obsList);
   }
 
   public void updateFormData() {
@@ -114,6 +140,9 @@ public class SellerFormController implements Initializable {
     Locale.setDefault(Locale.US);
     txtBaseSalary.setText(String.format("%.2f", entity.getBaseSalary()));
     dpBirthDate.setValue(entity.getBirthDate());
+    if (entity.getDepartment() == null) {
+      cboxDepartment.getSelectionModel().selectFirst();
+    } else cboxDepartment.setValue(entity.getDepartment());
   }
 
   public Seller getFormData() {
@@ -135,6 +164,18 @@ public class SellerFormController implements Initializable {
     return obj;
   }
 
+  private void initializeComboBoxDepartment() {
+    Callback<ListView<Department>, ListCell<Department>> factory = lv -> new ListCell<Department>() {
+      @Override
+      protected void updateItem(Department item, boolean empty) {
+        super.updateItem(item, empty);
+        setText(empty ? "" : item.getName());
+      }
+    };
+    cboxDepartment.setCellFactory(factory);
+    cboxDepartment.setButtonCell(factory.call(null));
+  }
+
   private void setErrorMessages(Map<String, String> errors) {
     var fields = errors.keySet();
 
@@ -151,8 +192,9 @@ public class SellerFormController implements Initializable {
     this.entity = entity;
   }
 
-  public void setService(SellerService service) {
+  public void setServices(SellerService service, DepartmentService service2) {
     this.service = service;
+    this.departmentService = service2;
   }
 
 }
